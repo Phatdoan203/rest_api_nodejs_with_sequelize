@@ -1,0 +1,8 @@
+GET http://localhost:8087/api/v2/user
+###
+POST http://localhost:8087/api/v2/auth/register
+Content-Type: application/json
+{
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
