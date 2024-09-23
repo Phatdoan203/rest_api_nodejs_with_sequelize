@@ -1,4 +1,4 @@
-import { where } from 'sequelize';
+
 import db from '../models';
 import bcript, { genSaltSync } from 'bcryptjs'
 import jwt from 'jsonwebtoken'
