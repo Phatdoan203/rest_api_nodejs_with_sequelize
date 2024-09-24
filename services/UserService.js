@@ -6,8 +6,15 @@ export const getOneUser = (userId) => new Promise( async (resolve, reject) => {
         const response = await db.User.findOne({
             where : { id: userId },
             attributes: {
-                exclude: ['password']
-            }
+                exclude: ['password', 'role_code']
+            },
+            include: [
+                {
+                    model: db.Roles,
+                    as: 'roleData',
+                    attributes: ['id', 'code', 'value']
+                }
+            ]
         });
         
         resolve({
