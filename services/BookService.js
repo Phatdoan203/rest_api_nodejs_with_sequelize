@@ -1,5 +1,7 @@
+import { defaults } from 'joi';
 import db from '../models';
 import { Op } from 'sequelize';
+import {v4 as generateId} from 'uuid';
 require('dotenv').config();
 
 export const getBook = ({ page, limit, order, name, ...query }) => new Promise(async (resolve, reject) => {
@@ -18,7 +20,13 @@ export const getBook = ({ page, limit, order, name, ...query }) => new Promise(a
         
         const response = await db.Book.findAndCountAll({
             where: query,                                      // query được sử dụng để chứa các điều kiện lọc mà bạn muốn áp dụng vào truy vấn cơ sở dữ liệu.
-            ...queries                                         // ...queries: Dấu ba chấm ở đây cho phép bạn thêm tất cả các thuộc tính trong đối tượng queries vào đối tượng cấu hình truy vấn
+            ...queries,                                        // ...queries: Dấu ba chấm ở đây cho phép bạn thêm tất cả các thuộc tính trong đối tượng queries vào đối tượng cấu hình truy vấn
+            attributes: {
+                exclule: ['category_code']
+            },
+            include: [
+                { model: db.Category, attributes: { exclude: ['createdAt', 'updatedAt'] }, as: 'categoryData'}
+            ]                                        
         });
         
         resolve({
@@ -28,10 +36,30 @@ export const getBook = ({ page, limit, order, name, ...query }) => new Promise(a
         })
         
     } catch (error) {
+        // console.log(error)
         reject(error);
     }
 })
 
+
+
+export const CreateBook = (body) => new Promise( async (resolve, reject) => {
+    try {
+        const response = await db.Book.findOrCreate({
+            where: { title: body.title },
+            defaults: {
+                ...body,
+                id: generateId()
+            }
+        });
+        resolve({
+            err: response[1] ? 0 : 1,
+            mes: response[1] ? 'Created' : 'Cannot create new book'
+        });
+    } catch (error) {
+        reject(error);
+    }
+})
 
 // import db from '../models';
 // import { Op } from 'sequelize';
