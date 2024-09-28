@@ -1,8 +1,9 @@
-import { defaults } from 'joi';
+
 import db from '../models';
 import { Op } from 'sequelize';
 import {v4 as generateId} from 'uuid';
 require('dotenv').config();
+const cloudinary = require('cloudinary').v2;
 
 export const getBook = ({ page, limit, order, name, ...query }) => new Promise(async (resolve, reject) => {
     try {
@@ -43,89 +44,24 @@ export const getBook = ({ page, limit, order, name, ...query }) => new Promise(a
 
 
 
-export const CreateBook = (body) => new Promise( async (resolve, reject) => {
+export const CreateBook = (body, fileData) => new Promise( async (resolve, reject) => {
     try {
         const response = await db.Book.findOrCreate({
             where: { title: body.title },
             defaults: {
                 ...body,
-                id: generateId()
+                id: generateId(),
+                image: fileData?.path
             }
         });
         resolve({
             err: response[1] ? 0 : 1,
             mes: response[1] ? 'Created' : 'Cannot create new book'
         });
+        if (fileData && !response[1]) cloudinary.uploader.destroy(fileData.filename);
     } catch (error) {
         reject(error);
+        if(fileData) cloudinary.uploader.destroy(fileData.filename);
     }
 })
-
-// import db from '../models';
-// import { Op } from 'sequelize';
-// require('dotenv').config();
-
-// export const getBook = ({ page, limit, order, name, availible, id, ...query }) => new Promise(async (resolve, reject) => {
-//     try {
-//         const queries = { raw: true, nest: true };
-//         const offset = (!page || +page <= 1) ? 0 : (+page - 1);
-//         const finalLimit = +limit || +process.env.LIMIT_BOOK || 10;
-
-//         queries.offset = offset * finalLimit;
-//         queries.limit = finalLimit;
-
-//         if (order) {
-//             queries.order = [[order.column || 'id', order.direction || 'ASC']];
-//         }
-
-//         // Xây dựng điều kiện tìm kiếm
-//         const whereConditions = {};
-
-//         // Kiểm tra id
-//         if (id) {
-//             const parsedId = +id;
-//             if (!isNaN(parsedId)) {
-//                 whereConditions.id = parsedId;
-//             } else {
-//                 return reject({ err: 1, mes: 'Invalid ID format' });
-//             }
-//         }
-
-//         // Kiểm tra availible
-//         if (availible !== undefined) {
-//             const parsedAvailible = +availible;
-//             if (!isNaN(parsedAvailible)) {
-//                 whereConditions.availible = parsedAvailible;
-//             }
-//         }
-
-//         // Kiểm tra title
-//         if (name) {
-//             whereConditions.title = { [Op.substring]: name };
-//         }
-
-//         // Nếu không có điều kiện nào, trả về lỗi
-//         if (Object.keys(whereConditions).length === 0) {
-//             return reject({ err: 1, mes: 'No valid query parameters provided' });
-//         }
-
-//         // Truy vấn cơ sở dữ liệu
-//         const response = await db.Book.findAndCountAll({
-//             where: whereConditions,
-//             ...queries
-//         });
-
-//         // Trả về kết quả
-//         resolve({
-//             err: response ? 0 : 1,
-//             mes: response ? 'Got' : 'Cannot find books',
-//             bookData: response.rows || [],
-//             count: response.count
-//         });
-//     } catch (error) {
-//         console.error('Error fetching books:', error);
-//         reject({ err: 1, mes: 'Internal Server Error' });
-//     }
-// });
-
 

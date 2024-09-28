@@ -12,10 +12,13 @@ POST http://localhost:8087/api/v2/auth/login
 Content-Type: application/json
 
 {
-    "email": "admin1@gmail.com",
+    "email": "phatdoan.1014@gmail.com",
     "password": "123456"
 }
 
 ###
-GET http://localhost:8087/api/v2/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJhZG1pbjFAZ21haWwuY29tIiwicm9sZV9jb2RlIjoiUjMiLCJpYXQiOjE3MjcxMjMxMTUsImV4cCI6MTcyNzU1NTExNX0.hpPs6L8ZJvhnJqBqyNMAgSKAInCcA284aaHUp6dDpOA
+GET http://localhost:8087/api/v2/user/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJwaGF0ZG9hbi4xMDE0QGdtYWlsLmNvbSIsInJvbGVfY29kZSI6IlIxIiwiaWF0IjoxNzI3MTY5Nzc4LCJleHAiOjE3Mjc2MDE3Nzh9.8m5oldvPJ2p8CiJv-Wqq28PIPW9dobbB_OVZrM8HkwU
+
+### 
+GET http://localhost:8087/api/v2/book/?name=journey
