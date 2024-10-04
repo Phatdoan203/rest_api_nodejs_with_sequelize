@@ -10,3 +10,7 @@ export const price = joi.number().required();
 export const availible = joi.number().required();
 export const category_code = joi.string().uppercase().alphanum().required();
 export const image = joi.string().required();
+export const BookId = joi.string().required();
+export const BookIds = joi.array().required();
+export const name = joi.string();
+export const filename = joi.array().required();
