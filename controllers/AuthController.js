@@ -1,7 +1,7 @@
 import * as services from "../services";
 import { internalServerError, badRequest } from "../middleware/handle_error";
 import joi from 'joi';
-import { email, password } from "../helpers/joi_schema";
+import { email, password, RefreshToken } from "../helpers/joi_schema";
 
 export const register = async (req, res) => {
     try {
@@ -29,5 +29,17 @@ export const login = async (req, res) => {
 
     } catch (error) {
         return internalServerError(res);
+    }
+}
+
+
+export const RefreshTokenController = async (req, res) => {
+    try {
+        const { error } = joi.object({ RefreshToken }).validate(req.body);
+        if(error) return badRequest(error.details[0]?.message, res);
+        const response = await services.refreshToken(req.body.RefreshToken);
+        return res.status(200).json(response);
+    } catch (error) {
+        return internalServerError(res)
     }
 }
